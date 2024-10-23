@@ -49,26 +49,29 @@ def first(symbol, productions, firsts):
 
 # Función para comprobar si hay recursividad por la izquierda
 def has_left_recursion(productions):
+    problematic = []
     try:
         for non_terminal in productions:
             for production in productions[non_terminal]:
                 if production[0] == non_terminal:
-                    return True
-        return False
+                    problematic.append(non_terminal)
+        return problematic if problematic else None
     except Exception as e:
         raise Exception(f"Error al comprobar la recursividad por la izquierda: {e}")
 
 
 # Función para comprobar si hay factores comunes por la izquierda
 def has_common_prefix(productions):
+    problematic = []
     try:
         for non_terminal in productions:
             prefixes = set()
             for production in productions[non_terminal]:
                 if production[0] in prefixes:
-                    return True
+                    problematic.append(non_terminal)
+                    break
                 prefixes.add(production[0])
-        return False
+        return problematic if problematic else None
     except Exception as e:
         raise Exception(f"Error al comprobar factores comunes: {e}")
 
@@ -79,21 +82,23 @@ def is_ll1_grammar(productions):
         firsts = {}
 
         # Comprobar recursividad por la izquierda
-        if has_left_recursion(productions):
-            return False, "La gramática tiene recursividad por la izquierda."
+        left_recursion = has_left_recursion(productions)
+        if left_recursion:
+            return False, f"La gramática tiene recursividad por la izquierda en los no terminales: {', '.join(left_recursion)}."
 
         # Comprobar factores comunes por la izquierda
-        if has_common_prefix(productions):
-            return False, "La gramática tiene factores comunes por la izquierda."
+        common_prefix = has_common_prefix(productions)
+        if common_prefix:
+            return False, f"La gramática tiene factores comunes por la izquierda en los no terminales: {', '.join(common_prefix)}."
 
         return True, "La gramática es LL(1)."
     except Exception as e:
         raise Exception(f"Error al verificar si la gramática es LL(1): {e}")
 
 
-
+# Ejemplo de uso leyendo la gramática desde un archivo .txt
 def main():
-    archivo = 'gramatica.txt'
+    archivo = 'gramatica.txt'  # Nombre del archivo
     try:
         producciones = leer_gramatica(archivo)
         is_ll1, message = is_ll1_grammar(producciones)
