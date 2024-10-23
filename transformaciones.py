@@ -91,9 +91,9 @@ def is_ll1_grammar(productions):
         raise Exception(f"Error al verificar si la gramática es LL(1): {e}")
 
 
-# Ejemplo de uso leyendo la gramática desde un archivo .txt
+
 def main():
-    archivo = 'gramatica.txt'  # Nombre del archivo
+    archivo = 'gramatica.txt'
     try:
         producciones = leer_gramatica(archivo)
         is_ll1, message = is_ll1_grammar(producciones)
